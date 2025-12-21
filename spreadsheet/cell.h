@@ -2,15 +2,20 @@
 
 #include "common.h"
 #include "formula.h"
+#include "sheet.h"
 
+#include <cmath>
 #include <functional>
+#include <optional>
+#include <set>
 #include <unordered_set>
 
 class Sheet;
 
 class Cell : public CellInterface {
 public:
-    Cell(Sheet& sheet);
+    friend class Sheet;
+    Cell(Sheet& sheet, Position pos);
     ~Cell();
 
     void Set(std::string text);
@@ -23,14 +28,16 @@ public:
     bool IsReferenced() const;
 
 private:
-    class Impl;
-    class EmptyImpl;
-    class TextImpl;
-    class FormulaImpl;
+    Sheet& sheet_;
+    Position pos_;
 
-    std::unique_ptr<Impl> impl_;
+    std::string text_;
+    std::unique_ptr<FormulaInterface> formula_;
 
-    // Добавьте поля и методы для связи с таблицей, проверки циклических 
-    // зависимостей, графа зависимостей и т. д.
+    mutable std::optional<Value> cache_;
 
+    std::set<Cell*> depends_on_;
+    std::set<Cell*> depended_by_;
+
+    void InvalidateCache();
 };
