@@ -3,6 +3,7 @@
 #include "FormulaLexer.h"
 #include "common.h"
 
+#include <cmath>
 #include <forward_list>
 #include <functional>
 #include <stdexcept>

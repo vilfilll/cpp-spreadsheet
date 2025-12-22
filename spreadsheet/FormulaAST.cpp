@@ -145,22 +145,28 @@ public:
     double Evaluate(const SheetInterface& sheet) const override {
         const double lhs = lhs_->Evaluate(sheet);
         const double rhs = rhs_->Evaluate(sheet);
+        double result = 0.0;
 
         switch (type_) {
             case Add:
-                return lhs + rhs;
+                result = lhs + rhs;
+                break;
             case Subtract:
-                return lhs - rhs;
+                result = lhs - rhs;
+                break;
             case Multiply:
-                return lhs * rhs;
+                result = lhs * rhs;
+                break;
             case Divide:
-                if (rhs == 0) {
-                    throw FormulaError(FormulaError::Category::Arithmetic);
-                }
-                return lhs / rhs;
+                result = lhs / rhs;
+                break;
         }
 
-        throw FormulaError(FormulaError::Category::Arithmetic);
+        if (!std::isfinite(result)) {
+            throw FormulaError(FormulaError::Category::Arithmetic);
+        }
+
+        return result;
     }
 
 private:
